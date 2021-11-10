@@ -16,7 +16,6 @@ from utils.frame_utils import writeFlow, readFlow
 
 
 
-
 DEVICE = 'cuda'
 
 def load_image(imfile):
@@ -45,7 +44,6 @@ def viz(img, flo, cnt):
 def reviz(img, cnt):
     img = img[0].permute(1,2,0).cpu().numpy()
     flo = readFlow(f'demo-output/frame{cnt}.flo')
-    flo = flow_viz.flow_to_image(flo)
     img_flo = np.concatenate([img, flo], axis=0)
     cv2.imwrite(f'demo-output/reout{cnt}.jpg', img_flo[:, :, [2,1,0]]) 
     
@@ -53,7 +51,6 @@ def reviz(img, cnt):
 def save_flow(flo, cnt):
     flo = flo[0].permute(1,2,0).cpu().numpy()
     writeFlow(f'demo-output/frame{cnt}.flo', flo)
-
 
 def demo(args):
     model = torch.nn.DataParallel(RAFT(args))
@@ -78,8 +75,8 @@ def demo(args):
 
             flow_low, flow_up = model(image1, image2, iters=20, test_mode=True)
             viz(image1, flow_up, cnt)
-            # save_flow(flow_up, cnt)
-            # reviz(image1, cnt)
+            save_flow(flow_up, cnt)
+            reviz(image1, cnt)
             cnt+=1
 
 
